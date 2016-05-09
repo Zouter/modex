@@ -98,9 +98,9 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
 
     list(odds=scores$odds, qvals=scores$qval, pvals=scores$pval)
   })
-  #pvals = matrix(unlist(lapply(scores, function(x) x$pvals)), nrow=length(modules), byrow=T)
-  #qvals = matrix(p.adjust(pvals, method="fdr"), nrow=length(modules), byrow=T)
-  qvals = matrix(unlist(lapply(scores, function(x) x$qvals)), nrow=length(modules), byrow=T)
+  pvals = matrix(unlist(lapply(scores, function(x) x$pvals)), nrow=length(modules), byrow=T)
+  qvals = matrix(p.adjust(pvals, method="fdr"), nrow=length(modules), byrow=T)
+  #qvals = matrix(unlist(lapply(scores, function(x) x$qvals)), nrow=length(modules), byrow=T)
   odds = matrix(unlist(lapply(scores, function(x) x$odds)), nrow=length(modules), byrow=T)
 
   newodds = odds
@@ -118,7 +118,7 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
 
   percenriched = mean(apply(qvals, 2, min) <= qvalcutoff)
 
-  return(list(aucodds=aucodds*aucodds2, stillenriched=stillenriched, percenriched=percenriched, newodds=newodds, scores=scores))
+  return(list(aucodds=aucodds, stillenriched=stillenriched, percenriched=percenriched, newodds=newodds, scores=scores))
 }
 
 #' @export
