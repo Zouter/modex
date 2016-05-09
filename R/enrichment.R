@@ -17,6 +17,7 @@ jaccard <- function(m) {
   return(J)
 }
 
+#' @export
 filterGsets <- function(gsets, background, minsize=5, maxsize=500, maxoverlap=0.5, verbose=F) {
   gsets <- lapply(gsets, function(gset) unique(intersect(gset, background)))
   gsets <- Filter(function(x) between(length(x), minsize, maxsize), gsets)
@@ -87,6 +88,7 @@ testEnrichment = function(module, gsets, background) {
   scores
 }
 
+#' @export
 getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, oddscutoffs = 10^seq(0, 3, length.out=100)) {
   if(length(modules) == 0) {
     return(list(aucodds=0))
@@ -120,15 +122,28 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
 }
 
 #' @export
-testGridResults <- function(results, gsets_filtered, background) {
-  dplyr::bind_rows(mclapply(1:length(results$modules), function(i) {
+testGridResults <- function(results, gsets_filtered, background, parallel="qsub", qsub.conf=PRISM::qsub.configuration()) {
+  if (is.null(parallel)) {
+    mc.cores = 1
+    parallel = "multicore"
+  }
+
+  loop_func = function(i) {
     modules = results$modules[[i]]
     params = results$params[i,,drop=F]
 
-    scores = getAucodds(modules, gsets_filtered, background)
+    scores = modex::getAucodds(modules, gsets_filtered, background)
 
     data.frame(aucodds=scores$aucodds,  params, stringsAsFactors = F)
-  }, mc.cores = getOption("mc.cores", default=1)))
+  }
+
+  if(parallel == "multicore") {
+    return(dplyr::bind_rows(mclapply(1:length(results$modules), loop_func, mc.cores = getOption("mc.cores", default=1))))
+  } else if(parallel == "qsub") {
+    return(dplyr::bind_rows(PRISM::qsub.lapply(1:length(results$modules), loop_func, qsub.config=qsub.conf)))
+  } else {
+    stop("wrong parallel parameter!")
+  }
 }
 
 #' @export
