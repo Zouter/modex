@@ -99,7 +99,7 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
     list(odds=scores$odds, qvals=scores$qval, pvals=scores$pval)
   })
   pvals = matrix(unlist(lapply(scores, function(x) x$pvals)), nrow=length(modules), byrow=T)
-  qvals = matrix(p.adjust(pvals, method="fdr"), nrow=length(modules), byrow=T)
+  qvals = matrix(p.adjust(pvals, method="holm"), nrow=length(modules), byrow=T)
   #qvals = matrix(unlist(lapply(scores, function(x) x$qvals)), nrow=length(modules), byrow=T)
   odds = matrix(unlist(lapply(scores, function(x) x$odds)), nrow=length(modules), byrow=T)
 
