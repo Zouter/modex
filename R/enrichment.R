@@ -118,7 +118,7 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
 
   percenriched = mean(apply(qvals, 2, min) <= qvalcutoff)
 
-  return(list(aucodds=aucodds, stillenriched=stillenriched, percenriched=percenriched, newodds=newodds, scores=scores))
+  return(list(aucodds=aucodds*aucodds2, stillenriched=stillenriched, percenriched=percenriched, newodds=newodds, scores=scores))
 }
 
 #' @export
