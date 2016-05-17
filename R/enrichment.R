@@ -99,15 +99,14 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
     scores
   }))
   pvals = aacast(scores, moduleid~gsetid, "pval")
+  print(dim(pvals))
+  print(length(p.adjust(pvals, method="bonferroni")))
+  print(length(modules))
   qvals = matrix(p.adjust(pvals, method="bonferroni"), ncol=length(modules), byrow = F, dimnames = dimnames(pvals))
   odds = aacast(scores, moduleid~gsetid, "odds")
 
-  qvalcutoff = 0.05
-
   newodds = odds
   newodds[pvals > qvalcutoff/length(pvals)] = 0
-
-  oddscutoffs = 10^seq(0, 2, length.out=100)
 
   bestodds = apply(newodds, 1, max)
   stillenriched = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
