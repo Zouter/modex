@@ -93,33 +93,27 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
   if(length(modules) == 0) {
     return(list(aucodds=0))
   }
-  scores = lapply(modules, function(module) {
-    scores = testEnrichment(module, gsets_filtered, background)
+  scores = bind_rows(lapply(1:length(modules), function(moduleid) {
+    scores = testEnrichment(modules[[moduleid]], gsets_filtered, background)
+    scores$moduleid = moduleid
+    scores
+  }))
+  pvals = aacast(scores, moduleid~gsetid, "pval")
+  qvals = matrix(p.adjust(pvals, method="bonferroni"), ncol=length(modules), byrow = F, dimnames = dimnames(pvals))
+  odds = aacast(scores, moduleid~gsetid, "odds")
 
-    list(odds=scores$odds, qvals=scores$qval, pvals=scores$pval)
-  })
-
-  pvals = matrix(unlist(lapply(scores, function(x) x$pvals)), nrow=length(modules), byrow=T)
-  qvals = matrix(p.adjust(pvals, method="bonferroni"), nrow=length(modules), byrow=T)
-  #qvals = matrix(unlist(lapply(scores, function(x) x$qvals)), nrow=length(modules), byrow=T)
-  odds = matrix(unlist(lapply(scores, function(x) x$odds)), nrow=length(modules), byrow=T)
+  qvalcutoff = 0.05
 
   newodds = odds
-  newodds[qvals > qvalcutoff] = 0
+  newodds[pvals > qvalcutoff/length(pvals)] = 0
 
-  bestodds = apply(newodds, 2, max)
+  oddscutoffs = 10^seq(0, 2, length.out=100)
 
+  bestodds = apply(newodds, 1, max)
   stillenriched = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
   aucodds = (stillenriched[[1]] + 2*sum(stillenriched[2:length(stillenriched)-1]) + stillenriched[[length(stillenriched)]])/(2*length(stillenriched))
 
-  bestodds = apply(newodds, 1, max)
-
-  stillenriched2 = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
-  aucodds2 = (stillenriched2[[1]] + 2*sum(stillenriched2[2:length(stillenriched2)-1]) + stillenriched2[[length(stillenriched2)]])/(2*length(stillenriched2))
-
-  percenriched = mean(apply(qvals, 2, min) <= qvalcutoff)
-
-  return(list(aucodds=aucodds, stillenriched=stillenriched, percenriched=percenriched, newodds=newodds, scores=scores))
+  return(list(aucodds=aucodds, stillenriched=stillenriched, newodds=newodds, scores=scores))
 }
 
 #' @export
