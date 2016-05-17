@@ -99,7 +99,7 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
     scores
   }))
   pvals = aacast(scores, moduleid~gsetid, "pval")
-  qvals = matrix(p.adjust(pvals, method="fdr"), ncol=length(modules), byrow = F, dimnames = dimnames(pvals))
+  qvals = matrix(p.adjust(pvals, method="bonferroni"), ncol=length(modules), byrow = F, dimnames = dimnames(pvals))
   odds = aacast(scores, moduleid~gsetid, "odds")
 
   newodds = odds
