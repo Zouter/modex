@@ -30,7 +30,7 @@ affinity <- function(E, preference_fraction=c(-2, -1.5, -1, 0.5, 0, 0.2, 0.4, 0.
   list(params=params, modules=modules)
 }
 
-ica_fdr <- function(E, k=c(1,2,3,4,5), qvalcutoff=c(0.9, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01), icarepeat=3) {
+ica_fdr <- function(E, k=c(1,2,3,4,5,6,7,8,9,10), qvalcutoff=c(0.5, 0.2, 0.1, 0.05, 0.02, 0.01), icarepeat=3) {
   library(fastICA)
   library(fdrtool)
 

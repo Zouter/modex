@@ -83,7 +83,7 @@ testEnrichment = function(module, gsets, background) {
     #list(pval=pval, odds=(tp*tn)/(fn*fp), found=tp, gsetid=gsetid)
   }))
   if (nrow(scores) > 0) {
-    scores$qval = p.adjust(scores$pval, method="bonferroni")
+    scores$qval = p.adjust(scores$pval, method="fdr")
   }
   scores
 }
@@ -98,6 +98,7 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
 
     list(odds=scores$odds, qvals=scores$qval, pvals=scores$pval)
   })
+
   pvals = matrix(unlist(lapply(scores, function(x) x$pvals)), nrow=length(modules), byrow=T)
   qvals = matrix(p.adjust(pvals, method="bonferroni"), nrow=length(modules), byrow=T)
   #qvals = matrix(unlist(lapply(scores, function(x) x$qvals)), nrow=length(modules), byrow=T)

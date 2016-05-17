@@ -32,3 +32,10 @@ labels2modules = function(labels, genes=NULL, ignore_label=NULL) {
     names(labels)[labels == label]
   })
 }
+
+aacast = function(df, formula, value.var) {
+  formula = gsetid~moduleid
+  df = reshape2::dcast(scores, formula, value.var = value.var)
+  rownames(df) = df[,1]
+  as.matrix(df[,2:ncol(df)])
+}
