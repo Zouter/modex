@@ -83,13 +83,13 @@ testEnrichment = function(module, gsets, background) {
     #list(pval=pval, odds=(tp*tn)/(fn*fp), found=tp, gsetid=gsetid)
   }))
   if (nrow(scores) > 0) {
-    scores$qval = p.adjust(scores$pval, method="holm")
+    scores$qval = p.adjust(scores$pval, method="bonferroni")
   }
   scores
 }
 
 #' @export
-getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, oddscutoffs = 10^seq(0, 3, length.out=100)) {
+getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, oddscutoffs = 10^seq(0, 2, length.out=100)) {
   if(length(modules) == 0) {
     return(list(aucodds=0))
   }
@@ -99,7 +99,7 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
     list(odds=scores$odds, qvals=scores$qval, pvals=scores$pval)
   })
   pvals = matrix(unlist(lapply(scores, function(x) x$pvals)), nrow=length(modules), byrow=T)
-  qvals = matrix(p.adjust(pvals, method="holm"), nrow=length(modules), byrow=T)
+  qvals = matrix(p.adjust(pvals, method="bonferroni"), nrow=length(modules), byrow=T)
   #qvals = matrix(unlist(lapply(scores, function(x) x$qvals)), nrow=length(modules), byrow=T)
   odds = matrix(unlist(lapply(scores, function(x) x$odds)), nrow=length(modules), byrow=T)
 
@@ -113,8 +113,8 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
 
   bestodds = apply(newodds, 1, max)
 
-  stillenriched = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
-  aucodds2 = (stillenriched[[1]] + 2*sum(stillenriched[2:length(stillenriched)-1]) + stillenriched[[length(stillenriched)]])/(2*length(stillenriched))
+  stillenriched2 = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
+  aucodds2 = (stillenriched2[[1]] + 2*sum(stillenriched2[2:length(stillenriched2)-1]) + stillenriched2[[length(stillenriched2)]])/(2*length(stillenriched2))
 
   percenriched = mean(apply(qvals, 2, min) <= qvalcutoff)
 
