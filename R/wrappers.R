@@ -1,3 +1,4 @@
+#' @export
 agglom <- function(E, k=c(1,2,3,4,5,6,7,8,9,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76), agglom.method=c("ward.D2", "single", "complete", "average")) {
   # although this can look quite cumbersome, this kind of setup is easy to expand to multiple parameters and multiple commands which have to be run progressively
   treeparams = expand_grid(agglom.method=agglom.method)
@@ -16,6 +17,7 @@ agglom <- function(E, k=c(1,2,3,4,5,6,7,8,9,10,12,14,16,18,20,22,24,26,28,30,32,
   list(params=cutparams, modules=modules)
 }
 
+#' @export
 affinity <- function(E, preference_fraction=c(-2, -1.5, -1, 0.5, 0, 0.2, 0.4, 0.6)) {
   similarities = cor(t(E))
 
@@ -30,6 +32,7 @@ affinity <- function(E, preference_fraction=c(-2, -1.5, -1, 0.5, 0, 0.2, 0.4, 0.
   list(params=params, modules=modules)
 }
 
+#' @export
 ica_fdr <- function(E, k=c(2,3,4,5,6,7,8,9,10), qvalcutoff=c(0.5, 0.2, 0.1, 0.05, 0.02, 0.01), icarepeat=3) {
   library(fastICA)
   library(fdrtool)
@@ -58,6 +61,7 @@ ica_fdr <- function(E, k=c(2,3,4,5,6,7,8,9,10), qvalcutoff=c(0.5, 0.2, 0.1, 0.05
   list(params=cutoffparams, modules=modules)
 }
 
+#' @export
 wgcna <- function(E, power=c(1,2,3,4,5,6,7,8,9,10), mergeCutHeight=c(0, 0.1, 0.2, 0.3, 0.4, 0.5)) {
   library(WGCNA)
 
@@ -69,6 +73,7 @@ wgcna <- function(E, power=c(1,2,3,4,5,6,7,8,9,10), mergeCutHeight=c(0, 0.1, 0.2
   list(params=params, modules=modules)
 }
 
+#' @export
 kmedoids <- function(E, k=c(2,3,4,5,6,7,8,9,10,11,12,13,14,15), kmedoidsrepeat=1) {
   distances = (1-cor(t(E)))
 
