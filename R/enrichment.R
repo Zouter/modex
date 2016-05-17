@@ -99,7 +99,8 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
     scores
   }))
   pvals = aacast(scores, moduleid~gsetid, "pval")
-  qvals = matrix(p.adjust(pvals, method="fdr"), ncol=length(modules), byrow = F, dimnames = dimnames(pvals))
+  qvals = aacast(scores, moduleid~gsetid, "qval")
+  #qvals = matrix(p.adjust(pvals, method="fdr"), ncol=length(modules), byrow = F, dimnames = dimnames(pvals))
   odds = aacast(scores, moduleid~gsetid, "odds")
 
   newodds = odds
@@ -109,7 +110,11 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
   stillenriched = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
   aucodds = (stillenriched[[1]] + 2*sum(stillenriched[2:length(stillenriched)-1]) + stillenriched[[length(stillenriched)]])/(2*length(stillenriched))
 
-  return(list(aucodds=aucodds, stillenriched=stillenriched, newodds=newodds, scores=scores))
+  bestodds = apply(newodds, 2, max)
+  stillenriched = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
+  aucodds2 = (stillenriched[[1]] + 2*sum(stillenriched[2:length(stillenriched)-1]) + stillenriched[[length(stillenriched)]])/(2*length(stillenriched))
+
+  return(list(aucodds=2/(1/aucodds+1/aucodds2), stillenriched=stillenriched, newodds=newodds, scores=scores))
 }
 
 #' @export
