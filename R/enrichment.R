@@ -103,7 +103,7 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
   odds = aacast(scores, moduleid~gsetid, "odds")
 
   newodds = odds
-  newodds[pvals > qvalcutoff/length(pvals)] = 0
+  newodds[qvals > qvalcutoff] = 0
 
   bestodds = apply(newodds, 1, max)
   stillenriched = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
