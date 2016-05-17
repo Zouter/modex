@@ -83,7 +83,7 @@ testEnrichment = function(module, gsets, background) {
     #list(pval=pval, odds=(tp*tn)/(fn*fp), found=tp, gsetid=gsetid)
   }))
   if (nrow(scores) > 0) {
-    scores$qval = p.adjust(scores$pval, method="holm")
+    scores$qval = p.adjust(scores$pval, method="bonferroni")
   }
   scores
 }
