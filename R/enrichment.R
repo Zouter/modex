@@ -83,7 +83,7 @@ testEnrichment = function(module, gsets, background) {
     #list(pval=pval, odds=(tp*tn)/(fn*fp), found=tp, gsetid=gsetid)
   }))
   if (nrow(scores) > 0) {
-    scores$qval = p.adjust(scores$pval, method="bonferroni")
+    scores$qval = p.adjust(scores$pval, method="fdr")
   }
   scores
 }
@@ -114,7 +114,7 @@ getAucodds <- function(modules, gsets_filtered, background, qvalcutoff=0.05, odd
   stillenriched = unlist(lapply(oddscutoffs, function(cutoff) mean(bestodds > cutoff)))
   aucodds2 = (stillenriched[[1]] + 2*sum(stillenriched[2:length(stillenriched)-1]) + stillenriched[[length(stillenriched)]])/(2*length(stillenriched))
 
-  return(list(aucodds=2/(1/aucodds+1/aucodds2), stillenriched=stillenriched, newodds=newodds, scores=scores))
+  return(list(aucodds=2/(1/aucodds+1/aucodds2), aucodds1=aucodds, aucodds2=aucodds2, stillenriched=stillenriched, newodds=newodds, scores=scores))
 }
 
 #' @export
@@ -130,7 +130,7 @@ testGridResults <- function(results, gsets_filtered, background, parallel="qsub"
 
     scores = modex::getAucodds(modules, gsets_filtered, background)
 
-    data.frame(aucodds=scores$aucodds,  params, stringsAsFactors = F)
+    data.frame(aucodds=scores$aucodds, aucodds1=scores$aucodds1, aucodds2=scores$aucodds2, params, stringsAsFactors = F)
   }
 
   if(parallel == "multicore") {
